@@ -33,14 +33,14 @@ namespace pegasus
 
         // unary operations
 
+        constexpr auto funcOjb = FloatFuncs{f16_sqrt, f32_sqrt, f64_sqrt};
+        constexpr auto memFunc = &RvvFloatInsts::vfUnaryHandler_<
+                    XLEN, OperandMode{.dst = OperandMode::Mode::V, .src2 = OperandMode::Mode::V},
+                    funcOjb>;
         inst_handlers.emplace(
             "vfsqrt.v",
-            pegasus::Action::createAction<
-                &RvvFloatInsts::vfUnaryHandler_<
-                    XLEN, OperandMode{.dst = OperandMode::Mode::V, .src2 = OperandMode::Mode::V},
-                    FloatFuncs{f16_sqrt, f32_sqrt, f64_sqrt}>,
-                RvvFloatInsts>(nullptr, "vfsqrt.v", ActionTags::EXECUTE_TAG));
-
+            pegasus::Action::createAction<memFunc, RvvFloatInsts>(nullptr, "vfsqrt.v", ActionTags::EXECUTE_TAG));
+#if 0
         inst_handlers.emplace(
             "vfcvt.xu.f.v",
             pegasus::Action::createAction<
@@ -545,7 +545,7 @@ namespace pegasus
                                                   FloatFuncs{fge<float16_t>, fge<float32_t>,
                                                              fge<float64_t>}>,
                 RvvFloatInsts>(nullptr, "vmfge.vf", ActionTags::EXECUTE_TAG));
-
+#endif
         // ternary operations
 
         inst_handlers.emplace(
@@ -775,7 +775,7 @@ namespace pegasus
                                                               .src1 = OperandMode::Mode::F},
                                                   Fnmsac>,
                 RvvFloatInsts>(nullptr, "vfwnmsac.vf", ActionTags::EXECUTE_TAG));
-
+#if 0
         inst_handlers.emplace(
             "vfmin.vv",
             pegasus::Action::createAction<
@@ -816,6 +816,7 @@ namespace pegasus
                                                  FloatFuncs{fmax<float16_t>, fmax<float32_t>,
                                                             fmax<float64_t>}>,
                 RvvFloatInsts>(nullptr, "vfmax.vf", ActionTags::EXECUTE_TAG));
+#endif
     }
 
     template void RvvFloatInsts::getInstHandlers<RV32>(std::map<std::string, Action> &);
@@ -950,7 +951,7 @@ namespace pegasus
         return ++action_it;
     }
 
-    template <typename XLEN, OperandMode opMode, RvvFloatInsts::FloatFuncs funcs, RoundingMode rm>
+    template <typename XLEN, OperandMode opMode, auto funcs, RoundingMode rm>
     Action::ItrType RvvFloatInsts::vfUnaryHandler_(pegasus::PegasusState* state,
                                                    Action::ItrType action_it)
     {

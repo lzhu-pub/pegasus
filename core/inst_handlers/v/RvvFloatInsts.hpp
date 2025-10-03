@@ -39,7 +39,7 @@ namespace pegasus
         Action::ItrType vfmergeHandler_(pegasus::PegasusState* state_ptr,
                                         Action::ItrType action_it);
 
-        template <typename XLEN, OperandMode opMode, FloatFuncs funcs,
+        template <typename XLEN, OperandMode opMode, auto funcs,
                   RoundingMode rm = RoundingMode::DYN>
         Action::ItrType vfUnaryHandler_(pegasus::PegasusState* state_ptr,
                                         Action::ItrType action_it);
